@@ -1,0 +1,6 @@
+<h2>Group: <%= @group.group_name -%></h2>
+<ul>
+  <% @blueprints.each do |blueprint| -%>
+    <li><%= link_to blueprint.blueprint_name, :action => 'detail', :id => blueprint %></li>
+  <% end -%>
+</ul>

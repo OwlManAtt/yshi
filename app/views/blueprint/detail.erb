@@ -1,0 +1,59 @@
+<h2>Group: <%= link_to @group.group_name, :action => 'list', :id => @group -%> &raquo; <%= @blueprint.blueprint_name -%></h2>
+
+<div>
+  <table>
+    <tr>
+      <td>Blueprint</td>
+      <td><%= @blueprint.blueprint_name -%></td>
+    </tr>
+
+    <tr>
+      <td>Tech Level</td>
+      <td><%= @blueprint.tech_level -%></td>
+    </tr>
+
+    <tr>
+      <td>Produces</td>
+      <td><%= pluralize(@blueprint.product_batch_quantity, @blueprint.product_name) -%></td>
+    </tr>
+
+    <tr>
+      <td>Max Runs</td>
+      <td><%= @blueprint.production_limit -%></td>
+    </tr>
+  </table>
+</div>
+
+<div>
+  <h3>Bill of Materials</h3>
+  <table>
+    <tr>
+      <td>Material</td>
+      <td>Quantity</td>
+      <td>Dmg/job</td>
+    </tr>
+    <% @materials.each do |material| -%>
+    <tr>
+      <td><%= material.material_name -%></td>
+      <td><%= material.quantity -%></td>
+      <td><%= number_to_percentage((material.damage_per_job * 100), :precision => 0) -%></td>
+    </tr>
+    <% end -%>
+  </table>
+</div>
+
+<div>
+  <h3>Required Skills</h3>
+  <table>
+    <tr>
+      <td>Skill</td>
+      <td>Level</td>
+    </tr>
+    <% @skills.each do |skill| -%>
+      <tr>
+        <td><%= skill.skill_name -%></td>
+        <td><%= skill.level -%></td>
+      </tr>
+    <% end -%>
+  </table>
+</div>
