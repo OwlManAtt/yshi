@@ -19,7 +19,7 @@ namespace :eve do
         invGroups.groupName AS group_name
       FROM eve_dump.invGroups 
       WHERE invGroups.published = 1 
-      AND invGroups.categoryID = 9",
+      AND invGroups.categoryID IN (4,9)",
       
       "INSERT INTO blueprints 
       (id,blueprint_name,item_group_id,product_item_id,product_name,product_batch_quantity,base_price,tech_level,production_limit,waste_factor)
@@ -40,14 +40,15 @@ namespace :eve do
       WHERE invTypes.published = 1",
 
       "INSERT INTO blueprint_materials
-      (material_type_id,blueprint_id,material_name,quantity,damage_per_job,material_type)
+      (material_type_id,blueprint_id,material_name,quantity,damage_per_job,material_type,item_group_id)
       SELECT 
         invTypes.typeID AS material_type_id,
         typeActivityMaterials.typeID AS blueprint_type_id,
         invTypes.typeName AS material_name,
         typeActivityMaterials.quantity AS quantity,         
         typeActivityMaterials.damagePerJob AS damage_per_job,
-        'raw' AS meterial_type
+        'raw' AS meterial_type,
+        invTypes.groupID
       FROM eve_dump.typeActivityMaterials
       INNER JOIN eve_dump.invTypes ON typeActivityMaterials.requiredtypeID = invTypes.typeID
       INNER JOIN eve_dump.invGroups ON invTypes.groupID = invGroups.groupID
@@ -58,14 +59,15 @@ namespace :eve do
       AND invTypes.published = 1",
 
       "INSERT INTO blueprint_materials
-      (material_type_id,blueprint_id,material_name,quantity,damage_per_job,material_type)
+      (material_type_id,blueprint_id,material_name,quantity,damage_per_job,material_type,item_group_id)
       SELECT
         invTypes.typeID AS material_type_id,
         typeActivityMaterials.typeID AS blueprint_type_id,
         invTypes.typeName AS material_name, 
         typeActivityMaterials.quantity AS quantity, 
         typeActivityMaterials.damagePerJob AS damage_per_job,
-        'component' AS material_type 
+        'component' AS material_type,
+        invTypes.groupID
       FROM eve_dump.typeActivityMaterials
       INNER JOIN eve_dump.invTypes ON typeActivityMaterials.requiredtypeID = invTypes.typeID
       INNER JOIN eve_dump.invGroups ON invTypes.groupID = invGroups.groupID
@@ -85,7 +87,16 @@ namespace :eve do
       INNER JOIN eve_dump.invGroups ON invTypes.groupID = invGroups.groupID
       WHERE typeActivityMaterials.activityId = 1 
       AND invGroups.categoryID = 16
-      AND invTypes.published = 1"
+      AND invTypes.published = 1",
+    
+      # This stamps the correct meta-level (if available) of the product on to
+      # the BP. The metalevel will be handy for grabbing all T1 material costs...
+      # Don't care about ferrogel or base T1 items right now! Too much data.
+      "UPDATE blueprints, eve_dump.dgmTypeAttributes 
+      SET 
+        blueprints.meta_level = IFNULL(valueInt,valueFloat) 
+      WHERE blueprints.product_item_id = dgmTypeAttributes.typeID 
+      AND dgmTypeAttributes.attributeID = 633"
     ].each {|query|
       ActiveRecord::Base.connection.execute(query)
     }
