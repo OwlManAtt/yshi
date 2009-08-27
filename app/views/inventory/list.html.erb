@@ -1,0 +1,14 @@
+<table>
+  <tr>
+    <td>Blueprint</td>
+    <td>ME</td>
+    <td>PE</td>
+  </tr>
+  <% @inventory.each do |item| -%>
+    <tr>
+      <td><%= link_to item.blueprint.blueprint_name, :action => 'detail', :id => item -%></td>
+      <td><%= item.material_efficiency -%></td>
+      <td><%= item.material_efficiency -%></td>
+    </tr>
+  <% end -%>
+</table>

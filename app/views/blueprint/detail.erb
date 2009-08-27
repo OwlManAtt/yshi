@@ -1,5 +1,7 @@
 <h2>Group: <%= link_to @group.group_name, :action => 'list', :id => @group -%> &raquo; <%= @blueprint.blueprint_name -%></h2>
 
+<p><%= link_to 'Add to Inventory', :controller => 'inventory', :action => 'new', :id => @blueprint -%></p>
+
 <div>
   <table>
     <tr>

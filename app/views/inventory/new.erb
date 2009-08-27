@@ -1,0 +1,31 @@
+<h2>Adding Blueprint</h2>
+
+<%= error_messages_for(:blueprint_inventory) %>
+<% form_for :blueprint_inventory, :url => {:action => :create} do |form| -%>
+  <table>
+    <tr>
+      <td>Blueprint</td>
+      <td>
+        <%= form.hidden_field(:blueprint_id, :value => @bp_type.id) -%>
+        <%= @bp_type.blueprint_name -%>
+      </td>
+    </tr> 
+    <tr>
+      <td>ME Level</td>
+      <td><%= form.text_field(:material_efficiency, :value => 0) -%></td>
+    </tr>
+    <tr>
+      <td>PE Level</td>
+      <td><%= form.text_field(:production_efficiency, :value => 0) -%></td>
+    </tr>
+    <tr>
+      <td>Price Paid</td>
+      <td><%= form.text_field(:price, :value => @bp_type.base_price) -%></td>
+    </tr>
+    <tr>
+      <td colspan='2'>
+        <%= submit_tag %> 
+      </td>
+    </tr> 
+  </table> 
+<% end -%>
