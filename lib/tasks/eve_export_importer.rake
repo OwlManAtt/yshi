@@ -22,7 +22,7 @@ namespace :eve do
       AND invGroups.categoryID = 9",
       
       "INSERT INTO blueprints 
-      (id,blueprint_name,item_group_id,product_item_id,product_name,product_batch_quantity,base_price,tech_level,production_limit)
+      (id,blueprint_name,item_group_id,product_item_id,product_name,product_batch_quantity,base_price,tech_level,production_limit,waste_factor)
       SELECT
         invTypes.typeID AS id,
         invTypes.typeName AS blueprint_name,
@@ -32,7 +32,8 @@ namespace :eve do
         invTypeProduct.portionSize AS product_quantity,
         invTypes.basePrice AS blueprint_base_price,
         invBlueprintTypes.techLevel AS product_tech_level,
-        invBlueprintTypes.maxProductionLimit AS production_limit
+        invBlueprintTypes.maxProductionLimit AS production_limit,
+        invBlueprintTypes.wasteFactor AS waste_factor
       FROM eve_dump.invTypes
       INNER JOIN eve_dump.invBlueprintTypes ON invTypes.typeID = invBlueprintTypes.blueprintTypeID
       INNER JOIN eve_dump.invTypes AS invTypeProduct ON invBlueprintTypes.productTypeId = invTypeProduct.typeID
@@ -44,7 +45,7 @@ namespace :eve do
         invTypes.typeID AS material_type_id,
         typeActivityMaterials.typeID AS blueprint_type_id,
         invTypes.typeName AS material_name,
-        IF(invTypes.groupID = 332, typeActivityMaterials.quantity, round(typeActivityMaterials.quantity * (1 + invBlueprintTypes.wasteFactor / 100) ) ) AS quantity, 
+        typeActivityMaterials.quantity AS quantity,         
         typeActivityMaterials.damagePerJob AS damage_per_job,
         'raw' AS meterial_type
       FROM eve_dump.typeActivityMaterials
