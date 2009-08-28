@@ -1,12 +1,22 @@
-<h2>Group: <%= link_to @group.group_name, :action => 'list', :id => @group -%> &raquo; <%= @blueprint.blueprint_name -%></h2>
+<h2><%= @blueprint.blueprint_name -%></h2>
 
-<p><%= link_to 'Add to Inventory', :controller => 'inventory', :action => 'new', :id => @blueprint -%></p>
+<p><%= link_to 'Edit ME/PE', :action => 'edit', :id => @item -%></p>
 
 <div>
   <table>
     <tr>
       <td>Blueprint</td>
       <td><%= @blueprint.blueprint_name -%></td>
+    </tr>
+    
+    <tr>
+      <td>ME Level</td>
+      <td><%= @item.material_efficiency -%><%= ' (Perfect)' if @item.material_efficiency == @blueprint.perfect_material_efficiency-%></td>
+    </tr>
+
+    <tr>
+      <td>PE Level</td>
+      <td><%= @item.production_efficiency -%></td>
     </tr>
 
     <tr>
@@ -26,26 +36,38 @@
 
     <tr>
       <td>Run Cost</td>
-      <td><%= number_to_isk(@blueprint.run_cost) -%></td>
+      <td><%= number_to_isk(@blueprint.run_cost(@item.material_efficiency)) -%></td>
     </tr>
+  
+    <% if @blueprint.product_batch_quantity > 1 -%>
+    <tr>
+      <td>Unit Cost</td>
+      <td><%= number_to_isk(@blueprint.run_cost(@item.material_efficiency)) -%></td>
+    </tr>
+  <% end -%>
+
   </table>
 </div>
 
 <div>
   <h3>Bill of Materials</h3>
-  <p>Material efficiency level 0, no incompetence waste.</p>
+  <p>Assumes no incompetence waste.</p>
   <table>
     <tr>
       <td>Material</td>
-      <td>Quantity</td>
       <td>Dmg/job</td>
+      <td>Quantity</td>
+      <td>Waste</td>
+      <td>Perfect ME</td>
       <td>Cost</td>
     </tr>
     <% @materials.each do |material| -%>
     <tr>
       <td><%= material.material_name -%></td>
-      <td><%= number_with_delimiter(material.quantity) -%></td>
       <td><%= number_to_percentage((material.damage_per_job * 100), :precision => 0) -%></td>
+      <td><%= number_with_delimiter(material.quantity(@item.material_efficiency)) -%></td>
+      <td><%= number_with_delimiter(material.waste(@item.material_efficiency)) -%></td>
+      <td><%= number_with_delimiter(material.perfect_material_efficiency) -%></td>
       <td><%= number_to_isk(material.cost) -%></td>
     </tr>
     <% end -%>

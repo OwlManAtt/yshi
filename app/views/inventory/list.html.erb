@@ -3,12 +3,14 @@
     <td>Blueprint</td>
     <td>ME</td>
     <td>PE</td>
+    <td>Unit Cost</td>
   </tr>
   <% @inventory.each do |item| -%>
     <tr>
       <td><%= link_to item.blueprint.blueprint_name, :action => 'detail', :id => item -%></td>
       <td><%= item.material_efficiency -%></td>
-      <td><%= item.material_efficiency -%></td>
+      <td><%= item.production_efficiency -%></td>
+      <td><%= number_to_isk(item.blueprint.unit_cost(item.material_efficiency)) -%></td>
     </tr>
   <% end -%>
 </table>

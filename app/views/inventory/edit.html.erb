@@ -1,0 +1,31 @@
+<h2>Editing <%= @blueprint.blueprint_name -%></h2>
+
+<%= error_messages_for(:item) %>
+<% form_for :blueprint_inventory, @item, :url => {:action => :save} do |form| %>
+  <%= hidden_field_tag(:id, @item.id) -%>
+  <table>
+    <tr>
+      <td>Blueprint</td>
+      <td>
+        <%= @blueprint.blueprint_name -%>
+      </td>
+    </tr> 
+    <tr>
+      <td>ME Level</td>
+      <td><%= form.text_field(:material_efficiency, :value => @item.material_efficiency) -%></td>
+    </tr>
+    <tr>
+      <td>PE Level</td>
+      <td><%= form.text_field(:production_efficiency, :value => @item.production_efficiency) -%></td>
+    </tr>
+    <tr>
+      <td>Price Paid</td>
+      <td><%= form.text_field(:price, :value => @item.price) -%></td>
+    </tr>
+    <tr>
+      <td colspan='2'>
+        <%= submit_tag %> 
+      </td>
+    </tr> 
+  </table> 
+<% end -%>
