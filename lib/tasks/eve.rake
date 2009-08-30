@@ -9,7 +9,7 @@ namespace :eve do
       # MS SQL can understand.
 
       # Truncate the static data tables...
-      %w[item_groups blueprints blueprint_materials blueprint_skills].each {|table|
+      %w[item_groups blueprints blueprint_materials blueprint_skills trade_hubs].each {|table|
         ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table}")
       }
 
@@ -97,7 +97,15 @@ namespace :eve do
         SET 
           blueprints.meta_level = IFNULL(valueInt,valueFloat) 
         WHERE blueprints.product_item_id = dgmTypeAttributes.typeID 
-        AND dgmTypeAttributes.attributeID = 633"
+        AND dgmTypeAttributes.attributeID = 633",
+
+        "INSERT INTO trade_hubs 
+        (id,station_name) 
+        SELECT 
+          stationID, 
+          stationName
+        FROM eve_dump.staStations 
+        WHERE stationID IN (60003760,60008494,60004588,60005686,60011740)"
       ].each {|query|
         ActiveRecord::Base.connection.execute(query)
       }
@@ -107,9 +115,16 @@ namespace :eve do
   namespace :poll do
     
     desc "Gets pricing data from EVE Central for materials."
-    task :prices  => :environment do
-      client = PriceUpdater.new() # No options for now...defaults are fine.
+    task :material_prices  => :environment do
+      client = PriceUpdater::MarketStat.new() # No options for now...defaults are fine.
       client.update
-    end # prices"
+    end # material_prices
+
+    desc "Downloads the daily market log CSV and imports orders from the major tradehubs."
+    task :tradehub_prices => :environment do
+      client = PriceUpdater::MarketLog.new()
+      client.download
+      client.update
+    end # tradehub_prices
   end # poll namespace
 end # eve

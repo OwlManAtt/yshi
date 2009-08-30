@@ -42,5 +42,6 @@ class InventoryController < ApplicationController
     @blueprint = @item.blueprint
     @materials = @item.blueprint.blueprint_materials
     @skills = @item.blueprint.blueprint_skills
+    @hub_prices = @item.blueprint.market_datas.lowest_sell_per_hub
   end # detail
 end

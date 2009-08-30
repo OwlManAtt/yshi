@@ -79,9 +79,9 @@
   </div>
 
   <div id='margin'>
-    <p>The '<em>Price</em>' column reflects the lowest sell order in the system.</p>
+    <p>The '<em>Price</em>' column reflects the lowest sell order in the system. Trade hub data reflects the prior day and is updated at downtime.</p>
 
-    <table class='dataTable' width='40%'>
+    <table class='dataTable' width='60%'>
       <tr>
         <td class='dataTableSubhead'>System</td>
         <td class='dataTableSubhead'>Price</td>
@@ -89,13 +89,25 @@
         <td class='dataTableSubhead'>Profit</td>
       </tr>
 
+      <% margin_class = lambda { cycle('dataTableRow','dataTableRowAlt', :name => 'margin_table') } -%>
+      <% @hub_prices.each do |price| -%>
+      <% td_class = margin_class.call -%>
       <tr class='infoTableCenterRow'>
-        <td class='dataTableRow'><em>Custom</em></td>
-        <td class='dataTableRow'>
+        <td class='<%= td_class -%>'><%= price.station_name -%></td>
+        <td class='<%= td_class -%>'><%= number_to_isk(price.price) -%></td>
+        <td class='<%= td_class -%>'><%= number_to_percentage(price.margin(@blueprint.unit_cost(@item.material_efficiency)), :precision => 1) -%></td>
+        <td class='<%= td_class -%>'><%= number_to_isk(price.profit(@blueprint.unit_cost(@item.material_efficiency))) -%></td>
+      </tr>
+      <% end -%>
+      
+      <% td_class = margin_class.call -%>
+      <tr class='infoTableCenterRow'>
+        <td class='<%= td_class -%>'><em>Custom</em></td>
+        <td class='<%= td_class -%>'>
           <%= text_field_tag :custom_price, '0', :id => 'custom_price', :size => 10 %>
         </td>
-        <td class='dataTableRow' id='custom_margin_cell'></td>
-        <td class='dataTableRow' id='custom_profit_cell'></td>
+        <td class='<%= td_class -%>' id='custom_margin_cell'></td>
+        <td class='<%= td_class -%>' id='custom_profit_cell'></td>
       </tr>
     </table> 
   </div>
