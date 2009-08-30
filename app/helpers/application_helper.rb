@@ -42,4 +42,12 @@ module ApplicationHelper
 
     return faggy_text
   end # fagify_text
+
+  def damage_per_job(damage)
+    if damage == 1
+      return "<span class='dmg_na'>N/A</span>"
+    else
+      return number_to_percentage((damage * 100), :precision => 0)
+    end
+  end # damage_per_job
 end

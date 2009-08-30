@@ -1,16 +1,19 @@
-<table>
+<h2>Blueprint Inventory</h2>
+<p>These are all the blueprints owned by the corp.</p>
+<table class='dataTable' width='40%'>
   <tr>
-    <td>Blueprint</td>
-    <td>ME</td>
-    <td>PE</td>
-    <td>Unit Cost</td>
+    <td class='dataTableSubhead'>Blueprint</td>
+    <td class='dataTableSubhead'>ME</td>
+    <td class='dataTableSubhead'>PE</td>
+    <td class='dataTableSubhead'>Unit Cost</td>
   </tr>
   <% @inventory.each do |item| -%>
+    <% td_class = cycle('dataTableRow','dataTableRowAlt') -%>
     <tr>
-      <td><%= link_to item.blueprint.blueprint_name, :action => 'detail', :id => item -%></td>
-      <td><%= item.material_efficiency -%></td>
-      <td><%= item.production_efficiency -%></td>
-      <td><%= number_to_isk(item.blueprint.unit_cost(item.material_efficiency)) -%></td>
+      <td class='<%= td_class -%>'><%= link_to item.blueprint.blueprint_name, :action => 'detail', :id => item -%></td>
+      <td class='<%= td_class -%>'><%= item.material_efficiency -%></td>
+      <td class='<%= td_class -%>'><%= item.production_efficiency -%></td>
+      <td class='<%= td_class -%>'><%= number_to_isk(item.blueprint.unit_cost(item.material_efficiency)) -%></td>
     </tr>
   <% end -%>
 </table>

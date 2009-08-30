@@ -1,0 +1,17 @@
+    <table class='dataTable' width='40%'>
+      <tr>
+        <td class='dataTableSubhead'>Material</td>
+        <td class='dataTableSubhead'>Dmg/job</td>
+        <td class='dataTableSubhead'>Quantity</td>
+        <td class='dataTableSubhead'>Cost</td>
+      </tr>
+      <% @materials.each do |material| -%>
+      <% td_class = cycle('dataTableRow', 'dataTableRowAlt', :name => 'material_class') -%>
+      <tr class='infoTableCenterRow'>
+        <td class='<%= td_class -%>'><%= material.material_name -%></td>
+        <td class='<%= td_class -%>'><%= damage_per_job(material.damage_per_job) -%></td>
+        <td class='<%= td_class -%>'><%= number_with_delimiter(material.quantity(me_level)) -%></td>
+        <td class='<%= td_class -%>'><%= number_to_isk(material.cost(me_level)) -%></td>
+      </tr>
+      <% end -%>
+    </table>

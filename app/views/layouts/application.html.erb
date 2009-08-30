@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+    <title>YSHI Tools | <%= controller.action_name %></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <%= stylesheet_link_tag 'yasashii', 'jquery-ui-1.7.custom' %> 
+    <%= javascript_include_tag 'jquery-1.3.2.min', 'jquery-ui-1.7.2.custom.min' %> 
+  </head>
+  <body>
+    <div id='header'>
+      <h1><%= link_to 'YSHI Tools', home_url %></h1>
+    </div>
+
+    <div id='main-box'>
+      <div id='left-column'>
+        <%= render(:partial => 'layouts/sidebar') %>
+      </div>
+
+      <div id='right-column'>
+        <%= yield :page_header %>
+        <% if flash[:error] -%><div align='center'><div id='flash-error'><%=h flash[:error] %></div></div><% end -%>
+        <% if flash[:notice] -%><div align='center'><div id='flash-notice'><%=h flash[:notice] %></div></div><% end -%>
+        <%= yield :layout %>
+      </div>
+    </div>
+
+    <br clear='all' /><br />
+    <div id='footer'>
+      <p>YSHI Tools by <%= mail_to 'owlmanatt@gmail.com', 'Owl' %> of the Yasashii Syndicate.</p>
+      <p><%= link_to image_tag('yasashii_badge.png', :alt => 'Yasashii Syndicate', :border => 0), 'http://yasahsiisyndicate.org' %></p>
+    </div>
+  </body>
+</html>

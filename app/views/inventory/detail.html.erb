@@ -1,91 +1,154 @@
 <h2><%= @blueprint.blueprint_name -%></h2>
 
-<p><%= link_to 'Edit ME/PE', :action => 'edit', :id => @item -%></p>
-
 <div>
-  <table>
+  <table class='infoTable'>
+    <% label_class = lambda { cycle('infoTableRow','infoTableRowAlt', :name => 'label') } -%>
+    <% field_class = lambda { cycle('infoTableRow','infoTableRowAlt', :name => 'field') }-%>
+
     <tr>
-      <td>Blueprint</td>
-      <td><%= @blueprint.blueprint_name -%></td>
+      <td colspan='2' class='infoTableHead'>Blueprint Summary</td>
+    </tr>
+    <tr>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Blueprint</td>
+      <td class='<%= field_class.call -%>'><%= @blueprint.blueprint_name -%></td>
     </tr>
     
     <tr>
-      <td>ME Level</td>
-      <td><%= @item.material_efficiency -%><%= ' (Perfect)' if @item.material_efficiency == @blueprint.perfect_material_efficiency-%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>ME Level</td>
+      <td class='<%= field_class.call -%>'><%= @item.material_efficiency -%><%= ' (Perfect)' if @item.material_efficiency >= @blueprint.perfect_material_efficiency-%></td>
     </tr>
 
     <tr>
-      <td>PE Level</td>
-      <td><%= @item.production_efficiency -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>PE Level</td>
+      <td class='<%= field_class.call -%>'><%= @item.production_efficiency -%></td>
     </tr>
 
     <tr>
-      <td>Tech Level</td>
-      <td><%= @blueprint.tech_level -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Tech Level</td>
+      <td class='<%= field_class.call -%>'><%= @blueprint.tech_level -%></td>
     </tr>
 
     <tr>
-      <td>Produces</td>
-      <td><%= pluralize(@blueprint.product_batch_quantity, @blueprint.product_name) -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Produces</td>
+      <td class='<%= field_class.call -%>'><%= pluralize(@blueprint.product_batch_quantity, @blueprint.product_name) -%></td>
     </tr>
 
     <tr>
-      <td>Max Runs</td>
-      <td><%= @blueprint.production_limit -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Max Runs</td>
+      <td class='<%= field_class.call -%>'><%= @blueprint.production_limit -%></td>
     </tr>
 
     <tr>
-      <td>Run Cost</td>
-      <td><%= number_to_isk(@blueprint.run_cost(@item.material_efficiency)) -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Run Cost</td>
+      <td class='<%= field_class.call -%>'><%= number_to_isk(@blueprint.run_cost(@item.material_efficiency)) -%></td>
     </tr>
   
     <% if @blueprint.product_batch_quantity > 1 -%>
     <tr>
-      <td>Unit Cost</td>
-      <td><%= number_to_isk(@blueprint.run_cost(@item.material_efficiency)) -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Unit Cost</td>
+      <td class='<%= field_class.call -%>'><%= number_to_isk(@blueprint.unit_cost(@item.material_efficiency)) -%></td>
     </tr>
   <% end -%>
-
+  
+    <tr>
+      <td class='infoTableButtonRow <%= field_class.call -%>' colspan='2'>
+        <% form_tag :action => 'edit', :id => @item do %>
+          <%= submit_tag 'Edit ME/PE' %>
+        <% end -%>
+      </td>
+    </tr>
   </table>
 </div>
 
-<div>
-  <h3>Bill of Materials</h3>
-  <p>Assumes no incompetence waste.</p>
-  <table>
-    <tr>
-      <td>Material</td>
-      <td>Dmg/job</td>
-      <td>Quantity</td>
-      <td>Waste</td>
-      <td>Perfect ME</td>
-      <td>Cost</td>
-    </tr>
-    <% @materials.each do |material| -%>
-    <tr>
-      <td><%= material.material_name -%></td>
-      <td><%= number_to_percentage((material.damage_per_job * 100), :precision => 0) -%></td>
-      <td><%= number_with_delimiter(material.quantity(@item.material_efficiency)) -%></td>
-      <td><%= number_with_delimiter(material.waste(@item.material_efficiency)) -%></td>
-      <td><%= number_with_delimiter(material.perfect_material_efficiency) -%></td>
-      <td><%= number_to_isk(material.cost) -%></td>
-    </tr>
-    <% end -%>
-  </table>
-</div>
+<br />
 
-<div>
-  <h3>Required Skills</h3>
-  <table>
-    <tr>
-      <td>Skill</td>
-      <td>Level</td>
-    </tr>
-    <% @skills.each do |skill| -%>
+<div id='inventory_tabs'>
+  <ul>
+    <li><a href='#bom'>Bill of Materials</a></li>
+    <li><a href='#bom-details'>Material Analysis</a></li>
+    <li><a href='#margin'>Profit Margins</a></li>
+    <li><a href='#skills'>Skills</a></li>
+  </ul> 
+
+  <div id='bom'>
+    <%= render :partial => 'blueprint/bom', :locals => {:me_level => @item.material_efficiency} %>
+  </div>
+
+  <div id='bom-details'>
+    <%= render :partial => 'bom_detail', :locals => {:me_level => @item.material_efficiency, :run_cost => @blueprint.run_cost(@item.material_efficiency)} %>
+  </div>
+
+  <div id='margin'>
+    <p>The '<em>Price</em>' column reflects the lowest sell order in the system.</p>
+
+    <table class='dataTable' width='40%'>
       <tr>
-        <td><%= skill.skill_name -%></td>
-        <td><%= skill.level -%></td>
+        <td class='dataTableSubhead'>System</td>
+        <td class='dataTableSubhead'>Price</td>
+        <td class='dataTableSubhead'>Margin</td>
+        <td class='dataTableSubhead'>Profit</td>
       </tr>
-    <% end -%>
-  </table>
+
+      <tr class='infoTableCenterRow'>
+        <td class='dataTableRow'><em>Custom</em></td>
+        <td class='dataTableRow'>
+          <%= text_field_tag :custom_price, '0', :id => 'custom_price', :size => 10 %>
+        </td>
+        <td class='dataTableRow' id='custom_margin_cell'></td>
+        <td class='dataTableRow' id='custom_profit_cell'></td>
+      </tr>
+    </table> 
+  </div>
+
+  <div id='skills'>
+    <%= render :partial => 'blueprint/skills' %>
+  </div>
 </div>
+
+<script type='text/javascript'>
+<!--
+  function calculateMargin(cost,price_cell,margin_cell,profit_cell)
+  {
+    bad_class = 'unprofitable'
+
+    price = $('#' + price_cell).val().replace(/[^0-9]/g,'') 
+    profit = price - cost
+    margin = (profit/cost) * 100
+
+    margin = Math.round(margin * Math.pow(10,1)) / Math.pow(10,1)
+    profit = Math.round(profit * Math.pow(10,2)) / Math.pow(10,2)
+    
+    $('#' + margin_cell).html(margin + '%').removeClass(bad_class)
+
+    x = profit.toString().split('.');
+    x1 = x[0];
+    x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+      x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    }
+    profit_pretty = x1 + x2;
+
+    $('#' + profit_cell).html(profit_pretty + ' isk').removeClass(bad_class)
+
+    if(profit <= 0)
+    {
+      $('#' + margin_cell).addClass(bad_class)
+      $('#' + profit_cell).addClass(bad_class)
+    }
+
+    return true
+  } // end 
+
+  $(document).ready(function() {
+    $('#inventory_tabs').tabs();
+
+    $('#custom_price').val('0').change(function() {
+      calculateMargin(<%= @blueprint.unit_cost(@item.material_efficiency) -%>,'custom_price','custom_margin_cell','custom_profit_cell');
+    });
+    
+    // And then call it so we initialize the calculated fields...
+    calculateMargin(<%= @blueprint.unit_cost(@item.material_efficiency) -%>,'custom_price','custom_margin_cell','custom_profit_cell');
+  });
+-->
+</script>

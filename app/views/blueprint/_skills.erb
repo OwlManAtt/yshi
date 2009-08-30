@@ -1,0 +1,13 @@
+    <table class='dataTable' width='10%'>
+      <tr>
+        <td class='dataTableSubhead'>Skill</td>
+        <td class='dataTableSubhead'>Level</td>
+      </tr>
+      <% @skills.each do |skill| -%>
+      <% td_class = cycle('dataTableRow', 'dataTableRowAlt', :name => 'skill_class') -%>
+        <tr class='infoTableCenterRow'>
+          <td class='<%= td_class -%>'><%= skill.skill_name -%></td>
+          <td class='<%= td_class -%>'><%= skill.level -%></td>
+        </tr>
+      <% end -%>
+    </table>

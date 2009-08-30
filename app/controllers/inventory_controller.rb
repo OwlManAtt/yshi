@@ -34,7 +34,7 @@ class InventoryController < ApplicationController
   end # save
 
   def list
-    @inventory =  BlueprintInventory.find(:all, :joins => :blueprint, :order => 'blueprints.blueprint_name DESC') 
+    @inventory =  BlueprintInventory.find(:all, :joins => :blueprint, :order => 'blueprints.blueprint_name') 
   end # list
 
   def detail

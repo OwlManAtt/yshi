@@ -1,0 +1,31 @@
+    <table class='dataTable' width='60%'>
+      <tr>
+        <td class='dataTableSubhead'>Material</td>
+        <td class='dataTableSubhead'>Dmg/job</td>
+        <td class='dataTableSubhead'>% of Cost</td>
+        
+        <td class='dataTableSubhead'>Quantity</td>
+        <td class='dataTableSubhead'>Cost</td>
+
+        <td class='dataTableSubhead'>Waste</td>
+        <td class='dataTableSubhead'>Waste Cost</td>
+        
+        <td class='dataTableSubhead'>Perfect ME Level</td>
+      </tr>
+      <% @materials.each do |material| -%>
+      <% td_class = cycle('dataTableRow', 'dataTableRowAlt', :name => 'BoM_class') -%>
+      <tr class='infoTableCenterRow'>
+        <td class='<%= td_class -%>'><%= material.material_name -%></td>
+        <td class='<%= td_class -%>'><%= damage_per_job(material.damage_per_job) -%></td>
+        <td class='<%= td_class -%>'><%= number_to_percentage((material.cost(me_level) / run_cost) * 100, :precision => 0) -%></td>
+
+        <td class='<%= td_class -%>'><%= number_with_delimiter(material.quantity(me_level)) -%></td>
+        <td class='<%= td_class -%>'><%= number_to_isk(material.cost(me_level)) -%></td>
+
+        <td class='<%= td_class -%>'><%= number_with_delimiter(material.waste(me_level)) -%></td>
+        <td class='<%= td_class -%>'><%= number_to_isk(material.waste_cost(me_level)) -%></td>
+
+        <td class='<%= td_class -%>'><%= number_with_delimiter(material.perfect_material_efficiency) -%></td>
+      </tr>
+      <% end -%>
+    </table>

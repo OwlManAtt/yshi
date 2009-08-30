@@ -29,6 +29,10 @@ class BlueprintMaterial < ActiveRecord::Base
     end
   end # waste
 
+  def waste_cost(me_level=0)
+    material_prices.current.price * waste(me_level)    
+  end # waste_cost
+
   def cost(me_level=0)
     material_quantity = quantity + waste(me_level)  
     return (material_prices.current.price * material_quantity)

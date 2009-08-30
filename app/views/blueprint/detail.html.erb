@@ -1,69 +1,73 @@
 <h2>Group: <%= link_to @group.group_name, :action => 'list', :id => @group -%> &raquo; <%= @blueprint.blueprint_name -%></h2>
 
-<p><%= link_to 'Add to Inventory', :controller => 'inventory', :action => 'new', :id => @blueprint -%></p>
-
 <div>
-  <table>
+  <table class='infoTable'>
+    <% label_class = lambda { cycle('infoTableRow','infoTableRowAlt', :name => 'label') } -%>
+    <% field_class = lambda { cycle('infoTableRow','infoTableRowAlt', :name => 'field') }-%>
     <tr>
-      <td>Blueprint</td>
-      <td><%= @blueprint.blueprint_name -%></td>
+      <td colspan='2' class='infoTableHead'>Blueprint Summary</td>
     </tr>
 
     <tr>
-      <td>Tech Level</td>
-      <td><%= @blueprint.tech_level -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Blueprint</td>
+      <td class='<%= field_class.call -%>'><%= @blueprint.blueprint_name -%></td>
     </tr>
 
     <tr>
-      <td>Produces</td>
-      <td><%= pluralize(@blueprint.product_batch_quantity, @blueprint.product_name) -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Tech Level</td>
+      <td class='<%= field_class.call -%>'><%= @blueprint.tech_level -%></td>
+    </tr>
+    <tr>
+      <td class='<%= label_class.call -%> infoTableSubhead'>BPO Cost (est)</td>
+      <td class='<%= field_class.call -%>'><%= number_to_isk(@blueprint.base_price) -%></td>
+    </tr>
+    <tr>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Produces</td>
+      <td class='<%= field_class.call -%>'><%= pluralize(@blueprint.product_batch_quantity, @blueprint.product_name) -%></td>
     </tr>
 
     <tr>
-      <td>Max Runs</td>
-      <td><%= @blueprint.production_limit -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Max Runs</td>
+      <td class='<%= field_class.call -%>'><%= @blueprint.production_limit -%></td>
     </tr>
 
     <tr>
-      <td>Run Cost</td>
-      <td><%= number_to_isk(@blueprint.run_cost) -%></td>
+      <td class='<%= label_class.call -%> infoTableSubhead'>Run Cost</td>
+      <td class='<%= field_class.call -%>'><%= number_to_isk(@blueprint.run_cost) -%></td>
+    </tr>
+
+    <tr>
+      <td class='infoTableButtonRow <%= field_class.call -%>' colspan='2'>
+        <% form_tag :controller => 'inventory', :action => 'new', :id => @blueprint do %>
+          <%= submit_tag 'Add to Inventory' %>
+        <% end -%>
+      </td>
     </tr>
   </table>
 </div>
 
-<div>
-  <h3>Bill of Materials</h3>
-  <p>Material efficiency level 0, no incompetence waste.</p>
-  <table>
-    <tr>
-      <td>Material</td>
-      <td>Quantity</td>
-      <td>Dmg/job</td>
-      <td>Cost</td>
-    </tr>
-    <% @materials.each do |material| -%>
-    <tr>
-      <td><%= material.material_name -%></td>
-      <td><%= number_with_delimiter(material.quantity) -%></td>
-      <td><%= number_to_percentage((material.damage_per_job * 100), :precision => 0) -%></td>
-      <td><%= number_to_isk(material.cost) -%></td>
-    </tr>
-    <% end -%>
-  </table>
+<br />
+
+<div id='detail-tabs'>
+  <ul>
+    <li><a href='#bom'>Bill of Materials</a></li>
+    <li><a href='#skills'>Skills</a></li>
+  </ul>
+
+  <div id='bom'>
+    <p>Material efficiency level 0, no incompetence waste.</p>
+    <%= render :partial => 'bom', :locals => {:me_level => 0} %>
+  </div>
+
+  <div id='skills'>
+    <%= render :partial => 'skills' %>
+  </div>
 </div>
 
-<div>
-  <h3>Required Skills</h3>
-  <table>
-    <tr>
-      <td>Skill</td>
-      <td>Level</td>
-    </tr>
-    <% @skills.each do |skill| -%>
-      <tr>
-        <td><%= skill.skill_name -%></td>
-        <td><%= skill.level -%></td>
-      </tr>
-    <% end -%>
-  </table>
-</div>
+<script type='text/javascript'>
+<!--
+  $(document).ready(function() {
+    $('#detail-tabs').tabs();
+  });
+-->
+</script>
