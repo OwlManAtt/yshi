@@ -94,7 +94,7 @@ class PriceUpdater
       raise "Gunzip failed on #{@file_path} with status #{$?.exitstatus}." if $?.exitstatus != 0
     end
 
-    def load
+    def update 
       ActiveRecord::Base.connection.execute('TRUNCATE market_log_import')
 
       file = @file_path.gsub(/\.gz$/,'')

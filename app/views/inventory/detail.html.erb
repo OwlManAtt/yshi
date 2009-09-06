@@ -123,7 +123,7 @@
   {
     bad_class = 'unprofitable'
 
-    price = $('#' + price_cell).val().replace(/[^0-9]/g,'') 
+    price = $('#' + price_cell).val().replace(/[^0-9.]/g,'') 
     profit = price - cost
     margin = (profit/cost) * 100
 
@@ -155,7 +155,7 @@
   $(document).ready(function() {
     $('#inventory_tabs').tabs();
 
-    $('#custom_price').val('0').change(function() {
+    $('#custom_price').val('<%= number_to_isk(@item.blueprint.last_sell_price) -%>').change(function() {
       calculateMargin(<%= @blueprint.unit_cost(@item.material_efficiency) -%>,'custom_price','custom_margin_cell','custom_profit_cell');
     });
     

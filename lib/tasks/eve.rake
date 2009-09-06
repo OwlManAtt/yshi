@@ -105,7 +105,16 @@ namespace :eve do
           stationID, 
           stationName
         FROM eve_dump.staStations 
-        WHERE stationID IN (60003760,60008494,60004588,60005686,60011740)"
+        WHERE stationID IN (60003760,60008494,60004588,60005686,60011740)",
+
+        "UPDATE item_groups SET poll_price = 1 WHERE id IN (18,754)",
+
+        "INSERT INTO item_types (id,name,item_group_id)
+        SELECT 
+          typeID, 
+          typeName, 
+          groupID 
+        FROM eve_dump.invTypes"
       ].each {|query|
         ActiveRecord::Base.connection.execute(query)
       }
@@ -126,5 +135,11 @@ namespace :eve do
       client.download
       client.update
     end # tradehub_prices
+
+    desc "Pulls corp market orders via the EVE API."
+    task :market_orders => :environment do
+      client = APIImporter::MarketLog.new(96327,'rMjjVY5fMFoiTQGgCUZ0SH6CnHUX8pb6baiRLZsImQ7tq6tmX9BqGsm5bOVSyzlI',144845181)
+      client.update
+    end # orders
   end # poll namespace
 end # eve

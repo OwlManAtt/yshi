@@ -1,0 +1,62 @@
+<h2>YSHI Financial Overview</h2>
+<p>This section will (eventually) provided detailed financial reports.</p> 
+
+<table border='0' width='100%'>
+  <tr>
+    <td valign='top'>
+      <h3>30-Day Revenue Data</h3>
+      <table class='dataTable' width='40%'>
+        <tr>
+          <td class='dataTableSubhead'>Activity</td>
+          <td class='dataTableSubhead'>Revenue</td>
+        </tr>
+        
+        <% td_class_function = lambda { cycle('dataTableRow','dataTableRowAlt') } -%>
+        <% @revenue_detail.each do |activity, revenue| -%>
+        <% td_class = td_class_function.call -%>
+        <tr class='infoTableCenterRow'>
+          <td class='<%= td_class -%>'><%= activity -%></td>
+          <td class='<%= td_class -%>'><%= number_to_isk(revenue) -%></td>
+        </tr>
+        <% end -%>
+
+        <tr class='infoTableCenterRow'>
+          <% td_class = td_class_function.call -%>
+          <td class='<%= td_class -%>'><strong>Total</strong></td>
+          <td class='<%= td_class -%>'><strong><%= number_to_isk(@revenue_detail_total) -%></strong></td>
+        </tr>
+      </table>
+    </td>
+    <td valign='top' rowspan='2'>
+      <%= image_tag '/market/corp_order_history_piechart' %>
+    </td>
+  </tr>
+  <tr>
+    <td valign='top'>
+      <h3>Latest Sell Orders</h3>
+      <table class='dataTable' width='80%'>
+        <tr>
+          <td class='dataTableSubhead'>Item</td>
+          <td class='dataTableSubhead'>System</td>
+          <td class='dataTableSubhead'>Quantity Remaining</td>
+          <td class='dataTableSubhead'>Total Value</td>
+          <td class='dataTableSubhead'>Margin</td>
+        </tr>
+
+        <% @lastest_sell_orders.each do |order| -%>
+        <% td_class = cycle('dataTableRow','dataTableRowAlt') -%>
+        <tr class='infoTableCenterRow'>
+          <td class='<%= td_class -%>'><%= order.item_type.name -%></td>
+          <td class='<%= td_class -%>'><%= order.trade_hub.station_name.split(' ').first -%></td>
+          <td class='<%= td_class -%>'><% if order.volume_remaining == 0 -%>Sold Out<% else -%>
+            <%= number_with_delimiter(order.volume_remaining) -%> / <%= number_with_delimiter(order.volume_entered) -%>
+            <% end -%>
+          </td>
+          <td class='<%= td_class -%>'><%= number_to_isk(order.total_value) -%></td>
+          <td class='<%= td_class -%>'><%= number_to_percentage(order.margin, :precision => 1) -%></td>
+        </tr>
+        <% end -%>
+      </table>
+    </td>
+  </tr>
+</table>

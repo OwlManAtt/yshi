@@ -1,6 +1,7 @@
 ActionController::Routing::Routes.draw do |map|
   map.inventory '/inventory', :controller => 'inventory', :action => 'list'
   map.bpdb '/blueprint', :controller => 'blueprint' 
+  map.financial '/market', :controller => 'market'
 
   # The priority is based upon order of creation: first created -> highest priority.
 
