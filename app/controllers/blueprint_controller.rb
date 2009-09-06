@@ -14,4 +14,12 @@ class BlueprintController < ApplicationController
     @materials = @blueprint.blueprint_materials
     @skills = @blueprint.blueprint_skills
   end
+
+  def search
+    @term = params[:search_term]
+    @blueprints = Blueprint.find(:all, 
+     :conditions => ['blueprint_name LIKE ?', "%#{params[:search_term]}%"], 
+     :order => 'blueprints.tech_level ASC, blueprints.blueprint_name ASC'
+    ) # end find
+  end
 end

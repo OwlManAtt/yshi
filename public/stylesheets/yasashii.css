@@ -241,3 +241,7 @@ h3 {
 .unprofitable {
   color: red;
 }
+
+.search-inactive {
+  color: gray;
+}

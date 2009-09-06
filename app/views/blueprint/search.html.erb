@@ -1,0 +1,15 @@
+<p>You searched for '<strong><%=h @term -%></strong>'. Here are the results.</p>
+
+<table class='dataTable' width='30%'>
+  <tr>
+    <td class='dataTableSubhead'>Blueprint</td>
+    <td class='dataTableSubhead'>Cost / unit</td>
+  </tr>
+  <% @blueprints.each do |bp| -%>
+    <% td_class = cycle('dataTableRow', 'dataTableRowAlt') -%>
+    <tr class='infoTableCenterRow'>
+      <td class='<%= td_class -%>'><%= link_to bp.blueprint_name, :action => 'detail', :id => bp -%></td>
+      <td class='<%= td_class -%>'><%= number_to_isk(bp.unit_cost) -%></td>
+    </tr>
+  <% end -%>
+</table>
