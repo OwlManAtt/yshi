@@ -1,15 +1,48 @@
+<h2>Blueprint Search Results</h2>
 <p>You searched for '<strong><%=h @term -%></strong>'. Here are the results.</p>
 
+<h3>All Blueprints</h3>
 <table class='dataTable' width='30%'>
   <tr>
     <td class='dataTableSubhead'>Blueprint</td>
-    <td class='dataTableSubhead'>Cost / unit</td>
+    <td class='dataTableSubhead'>Unit Cost</td>
   </tr>
-  <% @blueprints.each do |bp| -%>
-    <% td_class = cycle('dataTableRow', 'dataTableRowAlt') -%>
-    <tr class='infoTableCenterRow'>
-      <td class='<%= td_class -%>'><%= link_to bp.blueprint_name, :action => 'detail', :id => bp -%></td>
-      <td class='<%= td_class -%>'><%= number_to_isk(bp.unit_cost) -%></td>
+  <% if @blueprints.size == 0 -%>
+    <tr>
+      <td colspan='2' class='dataTableRow empty-table'>No blueprints found.</td>
     </tr>
+  <% else -%>
+    <% @blueprints.each do |bp| -%>
+      <% td_class = cycle('dataTableRow', 'dataTableRowAlt') -%>
+      <tr class='infoTableCenterRow'>
+        <td class='<%= td_class -%>'><%= link_to bp.blueprint_name, :action => 'detail', :id => bp -%></td>
+        <td class='<%= td_class -%>'><%= number_to_isk(bp.unit_cost) -%></td>
+      </tr>
+    <% end -%>
+  <% end -%>
+</table>
+
+<h3>YSHI Blueprints</h3>
+<table class='dataTable' width='30%'>
+  <tr>
+    <td class='dataTableSubhead'>Blueprint</td>
+    <td class='dataTableSubhead'>ME</td>
+    <td class='dataTableSubhead'>PE</td>
+    <td class='dataTableSubhead'>Unit Cost</td>
+  </tr>
+  <% if @inventory.size == 0 -%>
+    <tr>
+      <td colspan='4' class='dataTableRow empty-table'>No blueprints found.</td>
+    </tr>
+  <% else -%>
+    <% @inventory.each do |bp| -%>
+      <% td_class = cycle('dataTableRow', 'dataTableRowAlt') -%>
+      <tr class='infoTableCenterRow'>
+        <td class='<%= td_class -%>'><%= link_to bp.blueprint.blueprint_name, :controller => 'inventory', :action => 'detail', :id => bp -%></td>
+        <td class='<%= td_class -%>'><%= bp.material_efficiency -%></td>
+        <td class='<%= td_class -%>'><%= bp.production_efficiency -%></td>
+        <td class='<%= td_class -%>'><%= number_to_isk(bp.blueprint.unit_cost(bp.material_efficiency)) -%></td>
+      </tr>
+    <% end -%>
   <% end -%>
 </table>
