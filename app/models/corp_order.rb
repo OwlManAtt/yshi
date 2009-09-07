@@ -38,12 +38,12 @@ class CorpOrder < ActiveRecord::Base
   end
 
   def profit_per_unit
-    return price unless unit_material_cost > 0
+    return price unless unit_material_cost
     (price - unit_material_cost)
   end
 
   def margin
-    return 100 unless unit_material_cost > 0
+    return 100 unless unit_material_cost
     (profit_per_unit / unit_material_cost) * 100
   end
 end # CorpOrder
