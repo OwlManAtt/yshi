@@ -5,9 +5,7 @@ Features for version 1.0:
   * Manufacturing costs
   * Price data import from EVE Central
   * BP tracking
-
-Features for a future version:
-  * Who the fuck knows?
+  * Financial reporting
 
 == Setup ==
 1. Deploy rails application or something.
@@ -15,3 +13,7 @@ Features for a future version:
     * Load the extract in to a database called ``eve_dump''.
     * $ rake eve:import_static
     * Profit!
+3. Schedule the following rake tasks in cron:
+    * eve:poll:material_prices - Updates mineral/salvage prices (hourly).
+    * eve:poll:market_orders - Imports corp buy/sell orders (hourly).
+    * eve:poll:tradehub_prices - Imports buy orders for the tradehubs (daily, run around DT).
