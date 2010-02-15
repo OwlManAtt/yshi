@@ -9,7 +9,7 @@ namespace :eve do
       # MS SQL can understand.
 
       # Truncate the static data tables...
-      %w[item_groups blueprints blueprint_materials blueprint_skills trade_hubs].each {|table|
+      %w[item_groups blueprints blueprint_materials blueprint_skills trade_hubs item_types packaged_ship_volumes].each {|table|
         ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table}")
       }
 
@@ -109,12 +109,25 @@ namespace :eve do
 
         "UPDATE item_groups SET poll_price = 1 WHERE id IN (18,754)",
 
-        "INSERT INTO item_types (id,name,item_group_id)
+        # This is some bullshit to fix CCP's fuckup. Packaged ship/can volumes are
+        # grabbed from a static, hard-coded hash in the code - not the database.
+        # NJ, guys. Let's not store the fucking data in the fucking database.
+        "INSERT INTO packaged_ship_volumes
+        (item_group_id,volume_m3) VALUES
+        (448,1000),(12,1000),(274,1000),(340,1000),(324,2500),(419,15000),(27,50000),(898,50000),(883,1000000),(547,1000000),(906,10000),(540,15000),(830,2500),(26,10000),(420,5000),(485,1000000),(893,2500),(543,3750),(833,10000),(513,1000000),(25,2500),(358,10000),(894,10000),(28,20000),(941,500000),(831,2500),(541,5000),(902,1000000),(832,10000),(900,50000),(463,3750),(659,1000000),(237,2500),(31,500),(834,2500),(963,5000),(30,10000000),(380,20000)",
+
+        "INSERT INTO item_types (id,name,item_group_id,volume_m3)
         SELECT 
           typeID, 
           typeName, 
-          groupID 
-        FROM eve_dump.invTypes"
+          groupID,
+          volume 
+        FROM eve_dump.invTypes",
+
+        "UPDATE item_types, packaged_ship_volumes 
+        SET 
+          item_types.volume_m3 = packaged_ship_volumes.volume_m3 
+        WHERE item_types.item_group_id = packaged_ship_volumes.item_group_id",
       ].each {|query|
         ActiveRecord::Base.connection.execute(query)
       }
