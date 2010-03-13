@@ -17,3 +17,72 @@ Features for version 1.0:
     * eve:poll:material_prices - Updates mineral/salvage prices (hourly).
     * eve:poll:market_orders - Imports corp buy/sell orders (hourly).
     * eve:poll:tradehub_prices - Imports buy orders for the tradehubs (daily, run around DT).
+
+== DB Import Notes ==
+CCP fucked around with the database export for Dominion 1.0 and removed `typeActivityMaterials`.
+The correct thing to do would be to rewrite the import queries to be aware of `invTypeMaterials` 
+and `ramTypeRequirements`. Instead of doing the right thing, I just regenerated the old table like
+so:
+
+  CREATE TABLE typeActivityMaterials (
+   typeID SMALLINT,
+   activityID TINYINT UNSIGNED,
+   requiredTypeID SMALLINT,
+   quantity INT,
+   damagePerJob DOUBLE,
+   baseMaterial INT,
+   PRIMARY KEY (typeID, activityID, requiredTypeID)
+  );
+   
+  INSERT INTO typeActivityMaterials 
+   (typeID, activityID, requiredTypeID, quantity, damagePerJob, baseMaterial)
+  SELECT
+   rtr.typeID,
+   rtr.activityID,
+   rtr.requiredTypeID,
+   (rtr.quantity + IFNULL(itm.quantity, 0)),
+   rtr.damagePerJob,
+   itm.quantity
+  FROM invBlueprintTypes AS b
+   INNER JOIN ramTypeRequirements AS rtr
+    ON rtr.typeID = b.blueprintTypeID
+    AND rtr.activityID = 1 -- manufacturing
+   LEFT OUTER JOIN invTypeMaterials AS itm
+    ON itm.typeID = b.productTypeID
+    AND itm.materialTypeID = rtr.requiredTypeID
+  WHERE rtr.quantity > 0;
+   
+  INSERT INTO typeActivityMaterials 
+   (typeID, activityID, requiredTypeID, quantity, damagePerJob, baseMaterial)
+  SELECT
+   b.blueprintTypeID,
+   1,                  
+   itm.materialTypeID, 
+   (itm.quantity
+    - IFNULL(sub.quantity * sub.recycledQuantity, 0)
+   ),                  
+   1,                  
+   (itm.quantity
+    - IFNULL(sub.quantity * sub.recycledQuantity, 0)
+   )                   
+  FROM invBlueprintTypes AS b
+   INNER JOIN invTypeMaterials AS itm
+    ON itm.typeID = b.productTypeID
+   LEFT OUTER JOIN typeActivityMaterials m
+    ON b.blueprintTypeID = m.typeID
+    AND m.requiredTypeID = itm.materialTypeID
+   LEFT OUTER JOIN (
+    SELECT srtr.typeID AS blueprintTypeID,
+     sitm.materialTypeID AS recycledTypeID,
+     srtr.quantity AS recycledQuantity,
+     sitm.quantity
+    FROM ramTypeRequirements AS srtr
+     INNER JOIN invTypeMaterials AS sitm
+      ON srtr.requiredTypeID = sitm.typeID
+    WHERE srtr.recycle = 1materials are added
+     AND srtr.activityID = 1
+   ) AS sub
+    ON sub.blueprintTypeID = b.blueprintTypeID
+    AND sub.recycledTypeID = itm.materialTypeID
+  WHERE m.typeID IS NULL -- partially waste-affected materials already added
+   AND (itm.quantity - IFNULL(sub.quantity * sub.recycledQuantity, 0) ) > 0;
