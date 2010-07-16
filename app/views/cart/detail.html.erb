@@ -1,0 +1,106 @@
+<h2>Viewing Cart '<%= @cart.name -%>'</h2>
+<p>This cart requires <strong><%= @cart.cart_items.size -%></strong> factory slots.</p>
+<table border='0' width='100%'>
+  <tr>
+    <td valign='top'>
+      <!-- Item List -->
+      <table class='dataTable'>
+        <tr>
+          <td colspan='4' class='dataTableHead'>Products</td>
+        </tr>
+        <tr>
+          <td class='dataTableSubhead'>Item</td>
+          <td class='dataTableSubhead'>Quantity</td>
+          <td class='dataTableSubhead'>Volume</td>
+          <td class='dataTableSubhead'>Price</td>
+        </tr>
+        <% @cart.cart_items.each do |item| -%>
+          <% td_class = cycle('dataTableRow', 'dataTableRowAlt', :name => 'products') -%>
+          <tr>
+            <td class='<%= td_class -%>'><%= link_to item.blueprint_inventory.blueprint.product_name, :controller => 'inventory', :action => 'detail', :id => item.blueprint_inventory -%></td>
+            <td class='<%= td_class -%>'><%= item.quantity -%></td>
+            <td class='<%= td_class -%>'><%= number_with_delimiter(item.blueprint_inventory.blueprint.item_type.volume_m3 * item.quantity) -%> m3</td>
+            <td class='<%= td_class -%> calcRow'><%= text_field_tag(nil, number_with_delimiter(item.blueprint_inventory.blueprint.last_sell_price * item.quantity), :size => 12) -%></td>
+          </tr>
+        <% end -%>
+        <tr>
+          <% td_class = cycle('dataTableRow', 'dataTableRowAlt', :name => 'products') -%>
+          <td class='<%= td_class -%>' colspan='2' style='font-weight: bold; text-align: right;'>Totals</td>
+          <td class='<%= td_class -%>'><%= number_with_delimiter(@product_stats[:volume_m3]) -%> m3</td>
+          <td class='<%= td_class -%>'><span id='total-isk'>0</span> isk</td>
+        </tr>
+      </table>
+    </td>
+    <td valign='top'>
+      <!-- Material Summary -->
+      <table class='dataTable'>
+        <tr>
+          <td colspan='4' class='dataTableHead'>Raw Materials</td>
+        </tr>
+        <tr>
+          <td class='dataTableSubhead'>Item</td>
+          <td class='dataTableSubhead'>Quantity</td>
+          <td class='dataTableSubhead'>Volume</td>
+          <td class='dataTableSubhead'>Price</td>
+        </tr>
+        <% @cart.materials.each do |material| -%>
+          <% td_class = cycle('dataTableRow', 'dataTableRowAlt', :name => 'materials') -%>
+          <tr>
+            <td class='<%= td_class -%>'><%= material['name'] -%></td>
+            <td class='<%= td_class -%>'><%= number_with_delimiter(material['quantity']) -%></td>
+            <td class='<%= td_class -%>'><%= number_with_delimiter(material['volume_per_unit'] * material['quantity']) -%> m3</td>
+            <td class='<%= td_class -%>'><%= number_to_isk(material['price_per_unit'] * material['quantity']) -%></td>
+
+          </tr>
+        <% end -%>
+        <tr>
+          <% td_class = cycle('dataTableRow', 'dataTableRowAlt', :name => 'materials') -%>
+          <td class='<%= td_class -%>' colspan='2' style='font-weight: bold; text-align: right;'>Totals</td>
+          <td class='<%= td_class -%>'><%= number_with_delimiter(@material_stats[:volume_m3]) -%> m3</td>
+          <td class='<%= td_class -%>'><%= number_to_isk(@material_stats[:cost]) -%></td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+<script type='text/javascript'>
+<!--
+  function updateTotal(calc_class)
+  {
+     add_shit = $("." + calc_class + " input");
+
+     sum = 0;
+     for(i=0;i<add_shit.length;i++)
+     {
+       sum += parseFloat(add_shit[i].value.replace(/[^0-9.]/g,''));
+     } // for lewp
+
+     sum = Math.round(sum * Math.pow(10,1)) / Math.pow(10,1) 
+     x = sum.toString().split('.');
+     x1 = x[0];
+     x2 = x.length > 1 ? '.' + x[1] : '';
+     var rgx = /(\d+)(\d{3})/;
+     while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+     }
+     sum_pretty = x1 + x2;
+    
+     $('#total-isk').text(sum_pretty);
+     return true;
+  } // end updateTotal 
+
+
+  $(document).ready(function() {
+    row_class = 'calcRow';
+
+    $("." + row_class + " input").change(function() {
+      updateTotal(row_class); 
+    });
+
+    // Set the initial value.
+    updateTotal(row_class); 
+  })   
+-->
+</script>

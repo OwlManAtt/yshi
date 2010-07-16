@@ -3,6 +3,7 @@ class Blueprint < ActiveRecord::Base
   belongs_to :item_group
   has_many :blueprint_skills
   has_many :blueprint_materials
+  belongs_to :item_type, :foreign_key => 'product_item_id'
   has_many :corp_orders, :primary_key => 'product_item_id', :foreign_key => 'item_type_id' do
     # TODO move this to market transactions & latest sell
     def latest_sell_order

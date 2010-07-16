@@ -51,9 +51,17 @@
   <% end -%>
   
     <tr>
-      <td class='infoTableButtonRow <%= field_class.call -%>' colspan='2'>
+      <td class='infoTableButtonRow <%= field_class.call -%>' align='left'>
         <% form_tag :action => 'edit', :id => @item do %>
           <%= submit_tag 'Edit ME/PE' %>
+        <% end -%>
+      </td>
+      <td class='infoTableButtonRow <%= current_cycle 'field' -%>'>
+        <% form_tag :controller => 'cart', :action => 'add_item' do -%>
+          <%= hidden_field_tag 'blueprint_id', @item.id %>
+          <%= select 'cart', 'cart_id', [['Add to Cart...',nil]] + Cart.all.collect {|a| [a.name, a.id] } %>
+          <%= text_field_tag(:quantity, @blueprint.production_limit, {:size => 2}) %> 
+          <%= submit_tag 'Add' %>
         <% end -%>
       </td>
     </tr>

@@ -2,6 +2,7 @@
           <li><%= link_to 'Home', home_url %></li>
           <li><%= link_to 'Financials', financial_url %></li>
           <li><%= link_to 'Corp BPs', inventory_url %></li>
+          <li><%= link_to 'Carts', cart_url %></li>
           <li>
             <% form_tag({:controller => 'blueprint', :action => 'search'}, :method => 'get') do -%>
               <%= text_field_tag :search_term, nil, :size => 10, :id => 'nav_search_box' %>

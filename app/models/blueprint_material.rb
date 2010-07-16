@@ -1,6 +1,7 @@
 class BlueprintMaterial < ActiveRecord::Base
   belongs_to :blueprint
   belongs_to :item_group
+  belongs_to :item_type, :foreign_key => 'material_type_id'
   has_many :material_prices, :primary_key => 'material_type_id', :foreign_key => 'item_type_id' do
 
     # Pick the current row. If no unarchived rows exist, a dummy price object

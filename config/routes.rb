@@ -1,5 +1,6 @@
 ActionController::Routing::Routes.draw do |map|
   map.inventory '/inventory', :controller => 'inventory', :action => 'list'
+  map.cart '/cart', :controller => 'cart', :action => 'list'
   map.bpdb '/blueprint', :controller => 'blueprint' 
   map.financial '/market', :controller => 'market'
 

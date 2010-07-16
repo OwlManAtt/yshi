@@ -1,0 +1,14 @@
+<h2>Shopping Carts</h2>
+<p>This area allows you to select a number of blueprints to produce from, then gives you a list of the required raw materials, their cost, and their total volume.</p>
+
+<table class='dataTable'>
+  <tr>
+    <td class='dataTableSubhead'>Name</td>
+  </tr>
+  <% @carts.each do |cart| -%>
+    <% td_class = cycle('dataTableRow','dataTableRowAlt') -%>
+    <tr>
+      <td class='<%= td_class -%>'><%= link_to cart.name, :action => 'detail', :id => cart -%></td>
+    </tr>
+  <% end -%>
+</table>
