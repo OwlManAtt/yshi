@@ -1,4 +1,23 @@
 namespace :eve do
+  namespace :report do
+    desc "Reports and stuff."
+
+    task :margin => :environment do
+      report = []
+      
+      BlueprintInventory.find(:all, :conditions => "material_efficiency > 0").each do |bp|
+         report << {
+           :name => bp.blueprint.product_name,
+           :profit_est => (bp.blueprint.last_sell_price - bp.blueprint.unit_cost(bp.material_efficiency))
+         } unless bp.blueprint.last_sell_price == 0.0 
+      end # BP loop
+      
+      report.sort { |a,b| b[:profit_est] <=> a[:profit_est] }.each do |line|
+        print "#{line[:profit_est]}\t\t#{line[:name]}\n"
+      end # print loop
+    end # task margin
+  end # namespace report
+
   namespace :db do
   
     desc "Pulls static data (BPs, materials, etc) from the EVE database dump."
@@ -151,7 +170,9 @@ namespace :eve do
 
     desc "Pulls corp market orders via the EVE API."
     task :market_orders => :environment do
-      client = APIImporter::MarketLog.new(96327,'rMjjVY5fMFoiTQGgCUZ0SH6CnHUX8pb6baiRLZsImQ7tq6tmX9BqGsm5bOVSyzlI',144845181)
+      #client = APIImporter::MarketLog.new(96327,'rMjjVY5fMFoiTQGgCUZ0SH6CnHUX8pb6baiRLZsImQ7tq6tmX9BqGsm5bOVSyzlI',144845181)
+      char = Character.find(:first, :conditions => {:active => true})
+      client = APIImporter::MarketLog.new(char.api_user_id,char.api_full_key,char.api_character_id)
       client.update
     end # orders
   end # poll namespace
